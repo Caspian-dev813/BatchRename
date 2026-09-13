@@ -56,7 +56,5 @@ private:
 
     bool calcNewName(const QFileInfo& fi, int startNum, QString& outNewName);
     QFileInfoList getFilteredFiles();
-    bool fixFolderPermissions(const QString& folderPath);
-    bool performRename();
 };
 #endif // WIDGET_H

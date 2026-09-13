@@ -6,8 +6,6 @@
 #include <QFileInfo>
 #include <QFile>
 #include <QMessageBox>
-#include <QCoreApplication>
-#include <QProcess>
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
@@ -141,53 +139,18 @@ backup_files_class Widget::Backup_files_copyto(const QFileInfoList& allFiles, QS
 {
     backup_files_class res;
     QDir dir;
-    if(QDir(target_dir).exists())
-    {
-        QDir backupDir(target_dir);
-        backupDir.removeRecursively();
-    }
-    QFileInfo parentInfo(QFileInfo(target_dir).absolutePath());
-    bool parentWritable = parentInfo.isWritable();
     if(!dir.mkpath(target_dir))
     {
-        QString fallbackDir = QDir(QDir::tempPath()).filePath(
-            QString("_backup_rename_%1").arg(QCoreApplication::applicationPid()));
-        if(QDir(fallbackDir).exists())
-        {
-            QDir(fallbackDir).removeRecursively();
-        }
-        if(dir.mkpath(fallbackDir))
-        {
-            target_dir = fallbackDir;
-        }
-        else
-        {
-            res.failed = allFiles.size();
-            QString detail;
-            if(!parentInfo.exists())
-                detail = QString("Parent folder does not exist: %1").arg(parentInfo.absoluteFilePath());
-            else if(!parentWritable)
-                detail = QString("No write permission to parent folder:\n%1\n\n"
-                                 "On macOS, if the folder is in Desktop/Documents/Downloads,\n"
-                                 "please grant Full Disk Access to this app in:\n"
-                                 "System Settings -> Privacy & Security -> Full Disk Access")
-                             .arg(parentInfo.absoluteFilePath());
-            else
-                detail = QString("Cannot create folder:\n%1").arg(target_dir);
-            res.errorMsg.append(QString("Cannot create backup folder.\n%1").arg(detail));
-            return res;
-        }
+        res.failed = allFiles.size();
+        res.errorMsg.append("Cannot create backup folder.");
+        return res;
     }
     for(const QFileInfo& fi : allFiles)
     {
         QString src = fi.absoluteFilePath();
         QString dst = QDir(target_dir).filePath(fi.fileName());
-        if(QFile::exists(dst))
-        {
-            QFile::remove(dst);
-        }
         QFile fsrc(src);
-        bool ok = fsrc.copy(dst);
+        bool ok = fsrc.copy(src, dst);
         if(ok)
         {
             res.success++;
@@ -210,12 +173,6 @@ void Widget::delete_old_files(const PreviewItemList& previewList)
     {
         QString fullPath = QDir(item.sourceFile.absolutePath()).filePath(item.newFileName);
         bool delOk = QFile::remove(fullPath);
-        if(!delOk)
-        {
-            QProcess proc;
-            proc.start("/bin/rm", QStringList() << "-f" << fullPath);
-            delOk = proc.waitForFinished(10000) && proc.exitCode() == 0;
-        }
         if(delOk)
             ok++;
         else
@@ -274,103 +231,22 @@ void Widget::on_btn_execute_clicked()
         m_previewList.append(item);
         curNum++;
     }
-    bool allOk = performRename();
-    if(!allOk)
-    {
-        QMessageBox::StandardButton reply = QMessageBox::question(
-            this, "Permission Denied",
-            "Rename failed due to permission denied.\n"
-            "The folder/files may be owned by another user (e.g. root).\n\n"
-            "Try to fix permissions automatically?\n"
-            "(You will be asked to enter your password.)",
-            QMessageBox::Yes | QMessageBox::No);
-        if(reply == QMessageBox::Yes)
-        {
-            if(fixFolderPermissions(srcFolder))
-            {
-                performRename();
-            }
-            else
-            {
-                QMessageBox::warning(this, "Failed",
-                    "Permission fix failed or cancelled.");
-            }
-        }
-    }
-}
-
-bool Widget::performRename()
-{
     int renameOk=0,renameFail=0;
-    QStringList renameErrors;
-    bool permissionDenied = false;
     for(auto &item : m_previewList)
     {
         QString srcPath = item.sourceFile.absoluteFilePath();
         QString targetPath = QDir(item.sourceFile.absolutePath()).filePath(item.newFileName);
-        if(!QFile::exists(srcPath))
-        {
-            renameOk++;
-            continue;
-        }
         QFile f(srcPath);
         if(f.rename(targetPath))
         {
             renameOk++;
-            continue;
-        }
-        QString err = f.errorString();
-        if(err.contains("Permission", Qt::CaseInsensitive) ||
-           err.contains("denied", Qt::CaseInsensitive))
-        {
-            permissionDenied = true;
-            QProcess proc;
-            proc.start("/bin/mv", QStringList() << srcPath << targetPath);
-            if(proc.waitForFinished(10000) && proc.exitCode() == 0)
-            {
-                renameOk++;
-                continue;
-            }
-        }
-        renameFail++;
-        renameErrors.append(QString("%1 -> %2 : %3")
-            .arg(item.sourceFile.fileName(), item.newFileName, err));
-    }
-    QString msg = QString("Rename ok:%1 fail:%2").arg(renameOk).arg(renameFail);
-    if(!renameErrors.isEmpty())
-    {
-        if(permissionDenied && renameFail == m_previewList.size())
-        {
-            msg += "\n\nAll renames failed due to permission denied.";
         }
         else
         {
-            msg += "\n\n" + renameErrors.join("\n");
+            renameFail++;
         }
     }
-    QMessageBox::information(this,"Complete",msg);
-    return renameFail == 0;
-}
-
-bool Widget::fixFolderPermissions(const QString& folderPath)
-{
-    QString user = qEnvironmentVariable("USER");
-    QString group = "staff";
-    QString escapedPath = folderPath;
-    escapedPath.replace("\\", "\\\\");
-    escapedPath.replace("\"", "\\\"");
-    QString script = QString(
-        "set fp to \"%1\"\n"
-        "do shell script \"chown -R %2:%3 \" & quoted form of fp "
-        "with administrator privileges")
-        .arg(escapedPath, user, group);
-    QProcess proc;
-    proc.start("/usr/bin/osascript", QStringList() << "-e" << script);
-    if(!proc.waitForFinished(120000))
-    {
-        return false;
-    }
-    return proc.exitCode() == 0;
+    QMessageBox::information(this,"Complete",QString("Rename ok:%1 fail:%2").arg(renameOk).arg(renameFail));
 }
 
 void Widget::on_btn_restore_clicked()
@@ -388,17 +264,6 @@ void Widget::on_btn_restore_clicked()
         QString backupPath = iter.value();
         QFile f(backupPath);
         if(f.copy(originalPath))
-        {
-            restoreOk++;
-            continue;
-        }
-        if(QFile::exists(originalPath))
-        {
-            QFile::remove(originalPath);
-        }
-        QProcess proc;
-        proc.start("/bin/cp", QStringList() << backupPath << originalPath);
-        if(proc.waitForFinished(10000) && proc.exitCode() == 0)
         {
             restoreOk++;
         }

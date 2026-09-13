@@ -30,13 +30,5 @@
 	<string>NSApplication</string>
 	<key>NSSupportsAutomaticGraphicsSwitching</key>
 	<true/>
-	<key>com.apple.security.app-sandbox</key>
-	<false/>
-	<key>NSDesktopFolderUsageDescription</key>
-	<string>Need access to Desktop folder to rename files.</string>
-	<key>NSDocumentsFolderUsageDescription</key>
-	<string>Need access to Documents folder to rename files.</string>
-	<key>NSDownloadsFolderUsageDescription</key>
-	<string>Need access to Downloads folder to rename files.</string>
 </dict>
 </plist>
