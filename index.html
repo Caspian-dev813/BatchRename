@@ -283,6 +283,17 @@
     font-size: 1.4rem; cursor: pointer;
     float: right;
   }
+  .dl-progress-bar {
+    width: 100%; height: 10px;
+    background: var(--border);
+    border-radius: 6px; overflow: hidden;
+  }
+  .dl-progress-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+    border-radius: 6px;
+    transition: width 0.2s ease;
+  }
   .status-msg {
     margin-top: 16px; padding: 12px;
     border-radius: 8px; font-size: 0.85rem;
@@ -425,22 +436,19 @@
         <div class="dl-platform"><svg viewBox="0 0 24 24" style="fill:var(--text)"><use href="#icon-apple"/></svg></div>
         <h3>macOS</h3>
         <p class="meta" data-i18n="dl_mac_meta">Universal Binary · Apple Silicon &amp; Intel · macOS 11+</p>
-        <a href="https://github.com/Caspian-dev813/BatchRename/releases/download/v1.0.0/BatchRename-macOS.zip"
-           class="btn btn-primary" onclick="triggerStar()" data-i18n="dl_mac_btn">⬇ Download for macOS</a>
+        <button class="btn btn-primary" onclick="startDownload('https://github.com/Caspian-dev813/BatchRename/releases/download/v1.0.0/BatchRename-macOS.zip','BatchRename-macOS.zip')" data-i18n="dl_mac_btn">⬇ Download for macOS</button>
       </div>
       <div class="dl-card">
         <div class="dl-platform"><svg viewBox="0 0 24 24" style="fill:#00a4ef"><use href="#icon-windows"/></svg></div>
         <h3>Windows</h3>
         <p class="meta" data-i18n="dl_win_meta">64-bit · Windows 10/11 · Built with Qt 6.8 &amp; MSVC</p>
-        <a href="https://github.com/Caspian-dev813/BatchRename/releases/download/v1.0.0/BatchRename-windows.zip"
-           class="btn btn-primary" onclick="triggerStar()" data-i18n="dl_win_btn">⬇ Download for Windows</a>
+        <button class="btn btn-primary" onclick="startDownload('https://github.com/Caspian-dev813/BatchRename/releases/download/v1.0.0/BatchRename-windows.zip','BatchRename-windows.zip')" data-i18n="dl_win_btn">⬇ Download for Windows</button>
       </div>
       <div class="dl-card">
         <div class="dl-platform">📦</div>
         <h3 data-i18n="dl_src_title">Source Code</h3>
         <p class="meta" data-i18n="dl_src_meta">Full source code · MIT License · Build from scratch</p>
-        <a href="https://github.com/Caspian-dev813/BatchRename/archive/refs/heads/Windows.zip"
-           class="btn btn-secondary" onclick="triggerStar()" data-i18n="dl_src_btn">⬇ Download Source (zip)</a>
+        <button class="btn btn-secondary" onclick="startDownload('https://github.com/Caspian-dev813/BatchRename/archive/refs/heads/Windows.zip','BatchRename-source.zip')" data-i18n="dl_src_btn">⬇ Download Source (zip)</button>
       </div>
     </div>
     <p style="text-align:center; margin-top:32px; color:var(--text-dim); font-size:0.85rem;">
@@ -495,6 +503,22 @@
       <div class="status-msg" id="statusMsg"></div>
       <button class="btn btn-secondary" id="fallbackBtn" style="display:none;" onclick="openRepoStar()" data-i18n="modal_fallback">Open GitHub to star manually</button>
     </div>
+  </div>
+</div>
+
+<!-- Download Progress Modal -->
+<div class="modal-overlay" id="dlModal">
+  <div class="modal">
+    <h3 data-i18n="dl_modal_title">Downloading...</h3>
+    <p style="color:var(--text-dim); font-size:0.85rem; margin-bottom:16px;" data-i18n="dl_modal_desc">Please wait, depending on your network speed this may take a few seconds to minutes.</p>
+    <div class="dl-progress-bar">
+      <div class="dl-progress-fill" id="dlProgressFill"></div>
+    </div>
+    <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:0.8rem; color:var(--text-dim);">
+      <span id="dlProgressText">0%</span>
+      <span id="dlProgressSize">0 / 0 MB</span>
+    </div>
+    <div id="dlStatus" style="margin-top:16px; font-size:0.85rem;"></div>
   </div>
 </div>
 
@@ -568,6 +592,12 @@
       modal_waiting: 'Waiting for authorization...',
       modal_fallback: 'Open GitHub to star manually',
       modal_not_configured: 'Auto-star is not configured yet. Please star manually on GitHub.',
+      dl_modal_title: 'Downloading...',
+      dl_modal_desc: 'Please wait, depending on your network speed this may take a few seconds to minutes.',
+      dl_modal_starting: 'Starting download...',
+      dl_modal_done: '✅ Download complete!',
+      dl_modal_failed: '❌ Download failed, opening in browser instead...',
+      dl_modal_size: 'MB',
       modal_thanks: '✅ Thanks for starring! ⭐',
       modal_expired: 'Code expired. Please try again.',
       modal_denied: 'Authorization denied.',
@@ -635,6 +665,12 @@
       modal_waiting: '等待授权中……',
       modal_fallback: '打开 GitHub 手动收藏',
       modal_not_configured: '自动收藏尚未配置，请手动在 GitHub 上收藏。',
+      dl_modal_title: '正在下载...',
+      dl_modal_desc: '请稍候，下载时间取决于您的网络速度，可能需要几秒到几分钟。',
+      dl_modal_starting: '开始下载...',
+      dl_modal_done: '✅ 下载完成！',
+      dl_modal_failed: '❌ 下载失败，正在用浏览器打开...',
+      dl_modal_size: 'MB',
       modal_thanks: '✅ 感谢收藏！⭐',
       modal_expired: '代码已过期，请重试。',
       modal_denied: '授权被拒绝。',
@@ -783,6 +819,79 @@
       starPrompted = true;
       setTimeout(() => startStar(), 800);
     }
+  }
+
+  // ===== Download with progress =====
+  function startDownload(url, filename) {
+    triggerStar();
+
+    const t = dict();
+    const modal = document.getElementById('dlModal');
+    const fill = document.getElementById('dlProgressFill');
+    const pctText = document.getElementById('dlProgressText');
+    const sizeText = document.getElementById('dlProgressSize');
+    const statusEl = document.getElementById('dlStatus');
+
+    modal.style.display = 'flex';
+    fill.style.width = '0%';
+    pctText.textContent = '0%';
+    sizeText.textContent = '0 / 0 ' + t.dl_modal_size;
+    statusEl.textContent = t.dl_modal_starting;
+    statusEl.style.color = 'var(--text-dim)';
+
+    fetch(url, { redirect: 'follow' })
+      .then(res => {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const total = parseInt(res.headers.get('Content-Length')) || 0;
+        const reader = res.body.getReader();
+        let loaded = 0;
+        const chunks = [];
+
+        return new Promise((resolve, reject) => {
+          function pump() {
+            reader.read().then(({ done, value }) => {
+              if (done) {
+                resolve(new Blob(chunks));
+                return;
+              }
+              chunks.push(value);
+              loaded += value.length;
+              const pct = total ? Math.min(100, Math.round(loaded / total * 100)) : 0;
+              fill.style.width = pct + '%';
+              pctText.textContent = pct + '%';
+              const loadedMB = (loaded / 1048576).toFixed(1);
+              const totalMB = total ? (total / 1048576).toFixed(1) : '?';
+              sizeText.textContent = loadedMB + ' / ' + totalMB + ' ' + t.dl_modal_size;
+              pump();
+            }).catch(reject);
+          }
+          pump();
+        });
+      })
+      .then(blob => {
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(blobUrl);
+        fill.style.width = '100%';
+        pctText.textContent = '100%';
+        statusEl.textContent = t.dl_modal_done;
+        statusEl.style.color = 'var(--green)';
+        setTimeout(() => { modal.style.display = 'none'; }, 1500);
+      })
+      .catch(err => {
+        console.error('Download error:', err);
+        statusEl.textContent = t.dl_modal_failed;
+        statusEl.style.color = '#f85149';
+        setTimeout(() => {
+          window.open(url, '_blank');
+          modal.style.display = 'none';
+        }, 1200);
+      });
   }
 </script>
 
