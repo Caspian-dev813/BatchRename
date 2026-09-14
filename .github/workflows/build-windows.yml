@@ -38,7 +38,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p release
-          cp build/Release/BatchRename.exe release/
+          cp build/BatchRename.exe release/
           cd release
           windeployqt --release --no-translations --no-system-d3d-compiler BatchRename.exe
 
