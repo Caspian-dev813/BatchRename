@@ -448,7 +448,7 @@
         <div class="dl-platform">📦</div>
         <h3 data-i18n="dl_src_title">Source Code</h3>
         <p class="meta" data-i18n="dl_src_meta">Full source code · MIT License · Build from scratch</p>
-        <button class="btn btn-secondary" onclick="startDownload('https://github.com/Caspian-dev813/BatchRename/archive/refs/heads/Windows.zip','BatchRename-source.zip')" data-i18n="dl_src_btn">⬇ Download Source (zip)</button>
+        <button class="btn btn-secondary" onclick="showSourceModal()" data-i18n="dl_src_btn">⬇ Download Source (zip)</button>
       </div>
     </div>
     <p style="text-align:center; margin-top:32px; color:var(--text-dim); font-size:0.85rem;">
@@ -519,6 +519,25 @@
       <span id="dlProgressSize">0 / 0 MB</span>
     </div>
     <div id="dlStatus" style="margin-top:16px; font-size:0.85rem;"></div>
+  </div>
+</div>
+
+<!-- Source Code Branch Selector Modal -->
+<div class="modal-overlay" id="srcModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeSrcModal()">×</button>
+    <h3 data-i18n="src_modal_title">Choose Source Code</h3>
+    <p style="color:var(--text-dim); font-size:0.85rem; margin-bottom:20px;" data-i18n="src_modal_desc">Which platform's source code would you like to download?</p>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+      <button class="btn btn-secondary" onclick="downloadSource('macOS')" style="flex-direction:column; gap:8px;">
+        <svg viewBox="0 0 24 24" width="32" height="32" style="fill:var(--text)"><use href="#icon-apple"/></svg>
+        <span data-i18n="src_mac">macOS Source</span>
+      </button>
+      <button class="btn btn-secondary" onclick="downloadSource('Windows')" style="flex-direction:column; gap:8px;">
+        <svg viewBox="0 0 24 24" width="32" height="32" style="fill:#00a4ef"><use href="#icon-windows"/></svg>
+        <span data-i18n="src_win">Windows Source</span>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -598,6 +617,10 @@
       dl_modal_done: '✅ Download complete!',
       dl_modal_failed: '❌ Download failed, opening in browser instead...',
       dl_modal_size: 'MB',
+      src_modal_title: 'Choose Source Code',
+      src_modal_desc: "Which platform's source code would you like to download?",
+      src_mac: 'macOS Source',
+      src_win: 'Windows Source',
       modal_thanks: '✅ Thanks for starring! ⭐',
       modal_expired: 'Code expired. Please try again.',
       modal_denied: 'Authorization denied.',
@@ -671,6 +694,10 @@
       dl_modal_done: '✅ 下载完成！',
       dl_modal_failed: '❌ 下载失败，正在用浏览器打开...',
       dl_modal_size: 'MB',
+      src_modal_title: '选择源代码',
+      src_modal_desc: '您想下载哪个平台的源代码？',
+      src_mac: 'macOS 源码',
+      src_win: 'Windows 源码',
       modal_thanks: '✅ 感谢收藏！⭐',
       modal_expired: '代码已过期，请重试。',
       modal_denied: '授权被拒绝。',
@@ -892,6 +919,20 @@
           modal.style.display = 'none';
         }, 1200);
       });
+  }
+
+  // ===== Source code branch selector =====
+  function showSourceModal() {
+    document.getElementById('srcModal').style.display = 'flex';
+    triggerStar();
+  }
+  function closeSrcModal() {
+    document.getElementById('srcModal').style.display = 'none';
+  }
+  function downloadSource(branch) {
+    closeSrcModal();
+    const url = `https://github.com/Caspian-dev813/BatchRename/archive/refs/heads/${branch}.zip`;
+    startDownload(url, `BatchRename-${branch}-source.zip`);
   }
 </script>
 
