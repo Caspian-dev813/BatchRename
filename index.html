@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BatchRename — Batch File Renaming Tool</title>
+<meta name="description" content="A lightweight batch file renaming tool for macOS and Windows. Rename multiple files at once with custom prefix and sequential numbers." />
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg-soft: #161b22;
+    --card: #1c2128;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-dim: #8b949e;
+    --accent: #58a6ff;
+    --accent-2: #bc8cff;
+    --green: #3fb950;
+    --green-dark: #238636;
+    --orange: #d29922;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* Background glow */
+  .glow {
+    position: fixed;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.15;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .glow-1 { background: var(--accent); top: -200px; left: -200px; }
+  .glow-2 { background: var(--accent-2); bottom: -200px; right: -200px; }
+
+  /* Nav */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(13,17,23,0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 0;
+  }
+  .nav-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px;
+  }
+  .logo {
+    font-size: 1.2rem; font-weight: 700;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .nav-links { display: flex; gap: 24px; align-items: center; }
+  .nav-links a { color: var(--text-dim); font-size: 0.9rem; }
+  .nav-links a:hover { color: var(--text); text-decoration: none; }
+  .star-btn-nav {
+    background: var(--green-dark); color: #fff;
+    border: 1px solid var(--green);
+    padding: 6px 14px; border-radius: 6px;
+    font-size: 0.85rem; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .star-btn-nav:hover { background: var(--green); }
+
+  /* Hero */
+  .hero {
+    text-align: center;
+    padding: 80px 24px 60px;
+  }
+  .hero h1 {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--accent-2) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+  .hero .tagline {
+    font-size: 1.2rem; color: var(--text-dim);
+    max-width: 600px; margin: 0 auto 32px;
+  }
+  .cta-group {
+    display: flex; gap: 14px; justify-content: center;
+    flex-wrap: wrap; margin-bottom: 20px;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 24px; border-radius: 8px;
+    font-weight: 600; font-size: 0.95rem;
+    border: none; cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.2s;
+    text-decoration: none;
+  }
+  .btn:hover { transform: translateY(-2px); text-decoration: none; }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #0d1117;
+  }
+  .btn-secondary {
+    background: var(--card); color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { border-color: var(--accent); }
+  .btn-green {
+    background: var(--green-dark); color: #fff;
+    border: 1px solid var(--green);
+  }
+  .btn-green:hover { background: var(--green); }
+  .badge {
+    display: inline-block;
+    background: var(--bg-soft); border: 1px solid var(--border);
+    color: var(--text-dim); font-size: 0.8rem;
+    padding: 4px 10px; border-radius: 20px;
+    margin: 0 4px;
+  }
+
+  /* Sections */
+  section { padding: 60px 24px; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .section-title {
+    font-size: 2rem; font-weight: 700;
+    text-align: center; margin-bottom: 12px;
+  }
+  .section-sub {
+    text-align: center; color: var(--text-dim);
+    margin-bottom: 48px; max-width: 560px; margin-left: auto; margin-right: auto;
+  }
+
+  /* Features grid */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+  .feature {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .feature:hover { border-color: var(--accent); transform: translateY(-4px); }
+  .feature-icon {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    margin-bottom: 16px;
+  }
+  .feature h3 { font-size: 1.1rem; margin-bottom: 8px; }
+  .feature p { color: var(--text-dim); font-size: 0.9rem; }
+
+  /* Download */
+  .download-section { background: var(--bg-soft); }
+  .download-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .dl-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 32px;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+  .dl-card:hover { border-color: var(--accent); }
+  .dl-platform { font-size: 2.5rem; margin-bottom: 12px; }
+  .dl-card h3 { font-size: 1.3rem; margin-bottom: 6px; }
+  .dl-card .meta { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 20px; }
+  .dl-card .btn { width: 100%; justify-content: center; }
+
+  /* Usage steps */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    counter-reset: step;
+  }
+  .step {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    position: relative;
+  }
+  .step::before {
+    counter-increment: step;
+    content: counter(step);
+    position: absolute; top: 16px; right: 16px;
+    width: 28px; height: 28px;
+    background: var(--accent); color: var(--bg);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.85rem;
+  }
+  .step h4 { margin-bottom: 8px; }
+  .step p { color: var(--text-dim); font-size: 0.85rem; }
+
+  /* License */
+  .license-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 700px; margin: 0 auto;
+  }
+  .license-box h3 { margin-bottom: 12px; }
+  .license-box p { color: var(--text-dim); margin-bottom: 16px; }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 24px;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 1000;
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 32px;
+    max-width: 480px; width: 100%;
+    text-align: center;
+  }
+  .modal h3 { margin-bottom: 16px; }
+  .modal p { color: var(--text-dim); margin-bottom: 20px; font-size: 0.9rem; }
+  .code-box {
+    background: var(--bg);
+    border: 1px dashed var(--accent);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 16px 0;
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: var(--accent);
+  }
+  .modal .btn { width: 100%; justify-content: center; margin-top: 8px; }
+  .modal-close {
+    background: none; border: none;
+    color: var(--text-dim);
+    font-size: 1.4rem; cursor: pointer;
+    float: right;
+  }
+  .status-msg {
+    margin-top: 16px; padding: 12px;
+    border-radius: 8px; font-size: 0.85rem;
+    display: none;
+  }
+  .status-msg.success { background: rgba(63,185,80,0.15); color: var(--green); display: block; }
+  .status-msg.error { background: rgba(248,81,73,0.15); color: #f85149; display: block; }
+  .spinner {
+    display: inline-block;
+    width: 16px; height: 16px;
+    border: 2px solid var(--text-dim);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 600px) {
+    .nav-links .hide-mobile { display: none; }
+    .hero h1 { font-size: 2.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="glow glow-1"></div>
+<div class="glow glow-2"></div>
+
+<nav>
+  <div class="nav-inner">
+    <div class="logo">BatchRename</div>
+    <div class="nav-links">
+      <a href="#features" class="hide-mobile">Features</a>
+      <a href="#download" class="hide-mobile">Download</a>
+      <a href="#license" class="hide-mobile">License</a>
+      <button class="star-btn-nav" onclick="startStar()">★ Star</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <h1>BatchRename</h1>
+  <p class="tagline">A lightweight batch file renaming tool. Rename hundreds of files with a custom prefix and sequential numbers — in one click.</p>
+  <div class="cta-group">
+    <a href="#download" class="btn btn-primary">⬇ Download Free</a>
+    <button class="btn btn-green" onclick="startStar()">★ Star on GitHub</button>
+  </div>
+  <div>
+    <span class="badge">macOS</span>
+    <span class="badge">Windows</span>
+    <span class="badge">Universal Binary</span>
+    <span class="badge">v1.0.0</span>
+  </div>
+</section>
+
+<!-- Features -->
+<section id="features">
+  <div class="container">
+    <h2 class="section-title">Powerful, Simple</h2>
+    <p class="section-sub">Everything you need to rename files in bulk — no learning curve required.</p>
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">🏷️</div>
+        <h3>Custom Prefix</h3>
+        <p>Add any prefix to your file names. Perfect for organizing photos, documents, and archives.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔢</div>
+        <h3>Sequential Numbering</h3>
+        <p>3-digit padded numbers (001, 002, 003...) with configurable starting point. Prefix before or after the number.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🎯</div>
+        <h3>Extension Filter</h3>
+        <p>Filter files by extension (e.g. jpg;png;gif) so you only rename what you want.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">👀</div>
+        <h3>Live Preview</h3>
+        <p>See the old and new names side by side before committing. No surprises.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">💾</div>
+        <h3>Auto Backup &amp; Restore</h3>
+        <p>Files are backed up automatically before renaming. One click to restore if something goes wrong.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔧</div>
+        <h3>Permission Repair</h3>
+        <p>macOS feature: auto-fix file ownership when files belong to other users (e.g. mounted ISOs).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How to use -->
+<section>
+  <div class="container">
+    <h2 class="section-title">How to Use</h2>
+    <p class="section-sub">Four simple steps to rename your files.</p>
+    <div class="steps">
+      <div class="step">
+        <h4>Browse</h4>
+        <p>Select the folder containing the files you want to rename.</p>
+      </div>
+      <div class="step">
+        <h4>Configure</h4>
+        <p>Enter prefix, start number, and optional extension filter.</p>
+      </div>
+      <div class="step">
+        <h4>Preview</h4>
+        <p>Review the new names in the preview table.</p>
+      </div>
+      <div class="step">
+        <h4>Execute</h4>
+        <p>Click execute. Restore anytime if needed.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Download -->
+<section id="download" class="download-section">
+  <div class="container">
+    <h2 class="section-title">Download</h2>
+    <p class="section-sub">Free and open source. Available for macOS and Windows.</p>
+    <div class="download-grid">
+      <div class="dl-card">
+        <div class="dl-platform">🍎</div>
+        <h3>macOS</h3>
+        <p class="meta">Universal Binary · Apple Silicon &amp; Intel · macOS 11+</p>
+        <a href="https://github.com/Caspian-dev813/BatchRename/releases/download/v1.0.0/BatchRename-macOS.zip"
+           class="btn btn-primary" onclick="triggerStar()">⬇ Download for macOS</a>
+      </div>
+      <div class="dl-card">
+        <div class="dl-platform">🪟</div>
+        <h3>Windows</h3>
+        <p class="meta">64-bit · Windows 10/11 · Built with Qt 6.8 &amp; MSVC</p>
+        <a href="https://github.com/Caspian-dev813/BatchRename/releases/download/v1.0.0/BatchRename-windows.zip"
+           class="btn btn-primary" onclick="triggerStar()">⬇ Download for Windows</a>
+      </div>
+      <div class="dl-card">
+        <div class="dl-platform">📦</div>
+        <h3>Source Code</h3>
+        <p class="meta">Full source code · MIT License · Build from scratch</p>
+        <a href="https://github.com/Caspian-dev813/BatchRename/archive/refs/heads/Windows.zip"
+           class="btn btn-secondary" onclick="triggerStar()">⬇ Download Source (zip)</a>
+      </div>
+    </div>
+    <p style="text-align:center; margin-top:32px; color:var(--text-dim); font-size:0.85rem;">
+      📂 View all releases on <a href="https://github.com/Caspian-dev813/BatchRename/releases">GitHub Releases</a>
+    </p>
+  </div>
+</section>
+
+<!-- Repository -->
+<section>
+  <div class="container" style="text-align:center;">
+    <h2 class="section-title">Open Source</h2>
+    <p class="section-sub">BatchRename is fully open source. Star the repo to show your support!</p>
+    <div class="cta-group">
+      <a href="https://github.com/Caspian-dev813/BatchRename" class="btn btn-secondary" target="_blank">📂 View Repository</a>
+      <button class="btn btn-green" onclick="startStar()">★ Star This Project</button>
+    </div>
+  </div>
+</section>
+
+<!-- License -->
+<section id="license">
+  <div class="container">
+    <h2 class="section-title">License</h2>
+    <p class="section-sub">BatchRename is released under the MIT License.</p>
+    <div class="license-box">
+      <h3>MIT License</h3>
+      <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+      <p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+      <p style="margin-bottom:0;">THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 BatchRename · Built with Qt 6 · <a href="https://github.com/Caspian-dev813/BatchRename">GitHub</a></p>
+</footer>
+
+<!-- Star Modal -->
+<div class="modal-overlay" id="starModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <h3>⭐ Star BatchRename</h3>
+    <p>To star this project, we'll ask GitHub for permission. It only takes a few seconds.</p>
+    <div id="deviceCodeSection" style="display:none;">
+      <p>Enter this code on GitHub:</p>
+      <div class="code-box" id="userCode">------</div>
+      <a class="btn btn-primary" id="verifyLink" target="_blank">Open github.com/login/device</a>
+      <p style="margin-top:16px; font-size:0.8rem;">
+        <span class="spinner" id="pollSpinner" style="display:none;"></span>
+        <span id="pollText">Waiting for authorization...</span>
+      </p>
+    </div>
+    <div id="statusSection">
+      <div class="status-msg" id="statusMsg"></div>
+      <button class="btn btn-secondary" id="fallbackBtn" style="display:none;" onclick="openRepoStar()">Open GitHub to star manually</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ===== Configuration =====
+  // To enable auto-star, create a GitHub OAuth App at
+  // https://github.com/settings/developers and paste the Client ID below.
+  // No client secret needed (device flow).
+  const GITHUB_CLIENT_ID = 'YOUR_CLIENT_ID_HERE';
+  const REPO_OWNER = 'Caspian-dev813';
+  const REPO_NAME = 'BatchRename';
+  const REPO_URL = 'https://github.com/Caspian-dev813/BatchRename';
+  // =========================
+
+  let pollHandle = null;
+
+  function openModal() {
+    document.getElementById('starModal').classList.add('active');
+  }
+  function closeModal() {
+    document.getElementById('starModal').classList.remove('active');
+    if (pollHandle) { clearInterval(pollHandle); pollHandle = null; }
+    document.getElementById('deviceCodeSection').style.display = 'none';
+    document.getElementById('statusMsg').className = 'status-msg';
+    document.getElementById('statusMsg').textContent = '';
+    document.getElementById('fallbackBtn').style.display = 'none';
+  }
+
+  function openRepoStar() {
+    window.open(REPO_URL, '_blank');
+    closeModal();
+  }
+
+  function showStatus(msg, type) {
+    const el = document.getElementById('statusMsg');
+    el.textContent = msg;
+    el.className = 'status-msg ' + type;
+  }
+
+  async function startStar() {
+    openModal();
+
+    if (GITHUB_CLIENT_ID === 'YOUR_CLIENT_ID_HERE') {
+      showStatus('Auto-star is not configured yet. Please star manually on GitHub.', 'error');
+      document.getElementById('fallbackBtn').style.display = 'inline-block';
+      return;
+    }
+
+    try {
+      // Step 1: Request device code
+      const res = await fetch('https://github.com/login/device/code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ client_id: GITHUB_CLIENT_ID, scope: 'public_repo' })
+      });
+      const data = await res.json();
+      if (!data.device_code) {
+        throw new Error(data.error || 'Failed to get device code');
+      }
+
+      document.getElementById('userCode').textContent = data.user_code;
+      document.getElementById('verifyLink').href = data.verification_uri;
+      document.getElementById('deviceCodeSection').style.display = 'block';
+
+      // Step 2: Poll for access token
+      const interval = (data.interval || 5) * 1000;
+      pollHandle = setInterval(async () => {
+        try {
+          const tokRes = await fetch('https://github.com/login/oauth/access_token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({
+              client_id: GITHUB_CLIENT_ID,
+              device_code: data.device_code,
+              grant_type: 'urn:ietf:params:oauth:grant-type:device_code'
+            })
+          });
+          const tokData = await tokRes.json();
+
+          if (tokData.access_token) {
+            clearInterval(pollHandle);
+            pollHandle = null;
+            document.getElementById('pollSpinner').style.display = 'none';
+            document.getElementById('pollText').textContent = 'Authorized! Starring...';
+
+            // Step 3: Star the repo
+            const starRes = await fetch(`https://api.github.com/user/starred/${REPO_OWNER}/${REPO_NAME}`, {
+              method: 'PUT',
+              headers: {
+                'Authorization': `token ${tokData.access_token}`,
+                'Content-Length': 0
+              }
+            });
+            if (starRes.status === 204) {
+              showStatus('✅ Thanks for starring! ⭐', 'success');
+            } else {
+              throw new Error('Star failed (HTTP ' + starRes.status + ')');
+            }
+          } else if (tokData.error === 'authorization_pending') {
+            // keep waiting
+          } else if (tokData.error === 'slow_down') {
+            // continue
+          } else if (tokData.error === 'expired_token') {
+            clearInterval(pollHandle);
+            pollHandle = null;
+            showStatus('Code expired. Please try again.', 'error');
+          } else if (tokData.error === 'access_denied') {
+            clearInterval(pollHandle);
+            pollHandle = null;
+            showStatus('Authorization denied.', 'error');
+          }
+        } catch (e) {
+          clearInterval(pollHandle);
+          pollHandle = null;
+          showStatus('Error: ' + e.message, 'error');
+          document.getElementById('fallbackBtn').style.display = 'inline-block';
+        }
+      }, interval);
+
+    } catch (e) {
+      showStatus('Auto-star failed: ' + e.message + '. You can star manually instead.', 'error');
+      document.getElementById('fallbackBtn').style.display = 'inline-block';
+    }
+  }
+
+  // Trigger star when downloading (only prompts once)
+  let starPrompted = false;
+  function triggerStar() {
+    if (!starPrompted) {
+      starPrompted = true;
+      setTimeout(() => startStar(), 800);
+    }
+  }
+</script>
+
+</body>
+</html>
