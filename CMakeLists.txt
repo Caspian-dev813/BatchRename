@@ -1,24 +1,35 @@
 cmake_minimum_required(VERSION 3.19)
 project(BatchRename LANGUAGES CXX)
 
-set(CMAKE_PREFIX_PATH "/Users/mikehuang/Qt/6.11.1/macos")
+if(NOT DEFINED CMAKE_PREFIX_PATH)
+    set(CMAKE_PREFIX_PATH "$ENV{QTDIR}")
+endif()
 
 find_package(Qt6 6.11.1 REQUIRED COMPONENTS Core Widgets)
 
 qt_standard_project_setup()
 
-qt_add_executable(BatchRename
-        WIN32 MACOSX_BUNDLE
+set(SOURCES
         main.cpp
         widget.cpp
         widget.h
         widget.ui
-        Info.plist.in
 )
 
-set_target_properties(BatchRename PROPERTIES
-        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in
+if(APPLE)
+    list(APPEND SOURCES Info.plist.in)
+endif()
+
+qt_add_executable(BatchRename
+        WIN32 MACOSX_BUNDLE
+        ${SOURCES}
 )
+
+if(APPLE)
+    set_target_properties(BatchRename PROPERTIES
+            MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in
+    )
+endif()
 
 target_link_libraries(BatchRename
         PRIVATE

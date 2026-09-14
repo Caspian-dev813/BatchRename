@@ -1,0 +1,54 @@
+name: Build Windows Release
+
+on:
+  push:
+    branches: [ windows ]
+  workflow_dispatch:
+
+env:
+  QT_VERSION: '6.11.1'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ env.QT_VERSION }}
+          host: windows
+          target: desktop
+          arch: win64_mingw
+          install-deps: 'true'
+
+      - name: Configure
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -G "MinGW Makefiles"
+
+      - name: Build
+        run: cmake --build build --config Release -j
+
+      - name: Deploy with windeployqt
+        shell: bash
+        run: |
+          mkdir -p release
+          cp build/Release/BatchRename.exe release/
+          cd release
+          windeployqt --release --no-translations --no-system-d3d-compiler BatchRename.exe
+
+      - name: Create zip
+        shell: bash
+        run: |
+          7z a BatchRename-windows.zip release/*
+
+      - name: Upload to Release v1.0.0
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.0
+          files: BatchRename-windows.zip
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
