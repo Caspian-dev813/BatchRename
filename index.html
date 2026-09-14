@@ -31,7 +31,6 @@
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
 
-  /* Background glow */
   .glow {
     position: fixed;
     width: 600px; height: 600px;
@@ -44,7 +43,6 @@
   .glow-1 { background: var(--accent); top: -200px; left: -200px; }
   .glow-2 { background: var(--accent-2); bottom: -200px; right: -200px; }
 
-  /* Nav */
   nav {
     position: sticky; top: 0; z-index: 100;
     background: rgba(13,17,23,0.8);
@@ -75,7 +73,28 @@
   }
   .star-btn-nav:hover { background: var(--green); }
 
-  /* Hero */
+  .lang-switch {
+    display: inline-flex;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .lang-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .lang-btn.active {
+    background: var(--accent);
+    color: var(--bg);
+  }
+  .lang-btn:not(.active):hover { color: var(--text); }
+
   .hero {
     text-align: center;
     padding: 80px 24px 60px;
@@ -127,7 +146,6 @@
     margin: 0 4px;
   }
 
-  /* Sections */
   section { padding: 60px 24px; }
   .container { max-width: 1100px; margin: 0 auto; }
   .section-title {
@@ -139,7 +157,6 @@
     margin-bottom: 48px; max-width: 560px; margin-left: auto; margin-right: auto;
   }
 
-  /* Features grid */
   .features {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -164,7 +181,6 @@
   .feature h3 { font-size: 1.1rem; margin-bottom: 8px; }
   .feature p { color: var(--text-dim); font-size: 0.9rem; }
 
-  /* Download */
   .download-section { background: var(--bg-soft); }
   .download-grid {
     display: grid;
@@ -180,12 +196,12 @@
     transition: border-color 0.2s;
   }
   .dl-card:hover { border-color: var(--accent); }
-  .dl-platform { font-size: 2.5rem; margin-bottom: 12px; }
+  .dl-platform { margin-bottom: 12px; display: flex; justify-content: center; }
+  .dl-platform svg { width: 48px; height: 48px; }
   .dl-card h3 { font-size: 1.3rem; margin-bottom: 6px; }
   .dl-card .meta { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 20px; }
   .dl-card .btn { width: 100%; justify-content: center; }
 
-  /* Usage steps */
   .steps {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -212,7 +228,6 @@
   .step h4 { margin-bottom: 8px; }
   .step p { color: var(--text-dim); font-size: 0.85rem; }
 
-  /* License */
   .license-box {
     background: var(--card);
     border: 1px solid var(--border);
@@ -223,7 +238,6 @@
   .license-box h3 { margin-bottom: 12px; }
   .license-box p { color: var(--text-dim); margin-bottom: 16px; }
 
-  /* Footer */
   footer {
     border-top: 1px solid var(--border);
     padding: 32px 24px;
@@ -232,7 +246,6 @@
     font-size: 0.85rem;
   }
 
-  /* Modal */
   .modal-overlay {
     display: none;
     position: fixed; inset: 0;
@@ -296,6 +309,15 @@
 </head>
 <body>
 
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="icon-apple" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+  </symbol>
+  <symbol id="icon-windows" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M3 5.557L10.025 4.5v6.97H3V5.557zm0 12.886L10.025 19.5v-6.97H3v5.943zm7.75-13.033L21 3v8.47h-10.25V5.41zm0 13.164V12.5H21V21l-10.25-2.426z"/>
+  </symbol>
+</svg>
+
 <div class="glow glow-1"></div>
 <div class="glow glow-2"></div>
 
@@ -303,194 +325,352 @@
   <div class="nav-inner">
     <div class="logo">BatchRename</div>
     <div class="nav-links">
-      <a href="#features" class="hide-mobile">Features</a>
-      <a href="#download" class="hide-mobile">Download</a>
-      <a href="#license" class="hide-mobile">License</a>
-      <button class="star-btn-nav" onclick="startStar()">★ Star</button>
+      <a href="#features" class="hide-mobile" data-i18n="nav_features">Features</a>
+      <a href="#download" class="hide-mobile" data-i18n="nav_download">Download</a>
+      <a href="#license" class="hide-mobile" data-i18n="nav_license">License</a>
+      <div class="lang-switch">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="zh">中</button>
+      </div>
+      <button class="star-btn-nav" onclick="startStar()" data-i18n="nav_star">★ Star</button>
     </div>
   </div>
 </nav>
 
-<!-- Hero -->
 <section class="hero">
   <h1>BatchRename</h1>
-  <p class="tagline">A lightweight batch file renaming tool. Rename hundreds of files with a custom prefix and sequential numbers — in one click.</p>
+  <p class="tagline" data-i18n="hero_tagline">A lightweight batch file renaming tool. Rename hundreds of files with a custom prefix and sequential numbers — in one click.</p>
   <div class="cta-group">
-    <a href="#download" class="btn btn-primary">⬇ Download Free</a>
-    <button class="btn btn-green" onclick="startStar()">★ Star on GitHub</button>
+    <a href="#download" class="btn btn-primary" data-i18n="hero_download">⬇ Download Free</a>
+    <button class="btn btn-green" onclick="startStar()" data-i18n="hero_star">★ Star on GitHub</button>
   </div>
   <div>
     <span class="badge">macOS</span>
     <span class="badge">Windows</span>
-    <span class="badge">Universal Binary</span>
+    <span class="badge" data-i18n="badge_universal">Universal Binary</span>
     <span class="badge">v1.0.0</span>
   </div>
 </section>
 
-<!-- Features -->
 <section id="features">
   <div class="container">
-    <h2 class="section-title">Powerful, Simple</h2>
-    <p class="section-sub">Everything you need to rename files in bulk — no learning curve required.</p>
+    <h2 class="section-title" data-i18n="features_title">Powerful, Simple</h2>
+    <p class="section-sub" data-i18n="features_sub">Everything you need to rename files in bulk — no learning curve required.</p>
     <div class="features">
       <div class="feature">
         <div class="feature-icon">🏷️</div>
-        <h3>Custom Prefix</h3>
-        <p>Add any prefix to your file names. Perfect for organizing photos, documents, and archives.</p>
+        <h3 data-i18n="f1_title">Custom Prefix</h3>
+        <p data-i18n="f1_desc">Add any prefix to your file names. Perfect for organizing photos, documents, and archives.</p>
       </div>
       <div class="feature">
         <div class="feature-icon">🔢</div>
-        <h3>Sequential Numbering</h3>
-        <p>3-digit padded numbers (001, 002, 003...) with configurable starting point. Prefix before or after the number.</p>
+        <h3 data-i18n="f2_title">Sequential Numbering</h3>
+        <p data-i18n="f2_desc">3-digit padded numbers (001, 002, 003...) with configurable starting point. Prefix before or after the number.</p>
       </div>
       <div class="feature">
         <div class="feature-icon">🎯</div>
-        <h3>Extension Filter</h3>
-        <p>Filter files by extension (e.g. jpg;png;gif) so you only rename what you want.</p>
+        <h3 data-i18n="f3_title">Extension Filter</h3>
+        <p data-i18n="f3_desc">Filter files by extension (e.g. jpg;png;gif) so you only rename what you want.</p>
       </div>
       <div class="feature">
         <div class="feature-icon">👀</div>
-        <h3>Live Preview</h3>
-        <p>See the old and new names side by side before committing. No surprises.</p>
+        <h3 data-i18n="f4_title">Live Preview</h3>
+        <p data-i18n="f4_desc">See the old and new names side by side before committing. No surprises.</p>
       </div>
       <div class="feature">
         <div class="feature-icon">💾</div>
-        <h3>Auto Backup &amp; Restore</h3>
-        <p>Files are backed up automatically before renaming. One click to restore if something goes wrong.</p>
+        <h3 data-i18n="f5_title">Auto Backup &amp; Restore</h3>
+        <p data-i18n="f5_desc">Files are backed up automatically before renaming. One click to restore if something goes wrong.</p>
       </div>
       <div class="feature">
         <div class="feature-icon">🔧</div>
-        <h3>Permission Repair</h3>
-        <p>macOS feature: auto-fix file ownership when files belong to other users (e.g. mounted ISOs).</p>
+        <h3 data-i18n="f6_title">Permission Repair</h3>
+        <p data-i18n="f6_desc">macOS feature: auto-fix file ownership when files belong to other users (e.g. mounted ISOs).</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- How to use -->
 <section>
   <div class="container">
-    <h2 class="section-title">How to Use</h2>
-    <p class="section-sub">Four simple steps to rename your files.</p>
+    <h2 class="section-title" data-i18n="how_title">How to Use</h2>
+    <p class="section-sub" data-i18n="how_sub">Four simple steps to rename your files.</p>
     <div class="steps">
       <div class="step">
-        <h4>Browse</h4>
-        <p>Select the folder containing the files you want to rename.</p>
+        <h4 data-i18n="s1_title">Browse</h4>
+        <p data-i18n="s1_desc">Select the folder containing the files you want to rename.</p>
       </div>
       <div class="step">
-        <h4>Configure</h4>
-        <p>Enter prefix, start number, and optional extension filter.</p>
+        <h4 data-i18n="s2_title">Configure</h4>
+        <p data-i18n="s2_desc">Enter prefix, start number, and optional extension filter.</p>
       </div>
       <div class="step">
-        <h4>Preview</h4>
-        <p>Review the new names in the preview table.</p>
+        <h4 data-i18n="s3_title">Preview</h4>
+        <p data-i18n="s3_desc">Review the new names in the preview table.</p>
       </div>
       <div class="step">
-        <h4>Execute</h4>
-        <p>Click execute. Restore anytime if needed.</p>
+        <h4 data-i18n="s4_title">Execute</h4>
+        <p data-i18n="s4_desc">Click execute. Restore anytime if needed.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Download -->
 <section id="download" class="download-section">
   <div class="container">
-    <h2 class="section-title">Download</h2>
-    <p class="section-sub">Free and open source. Available for macOS and Windows.</p>
+    <h2 class="section-title" data-i18n="dl_title">Download</h2>
+    <p class="section-sub" data-i18n="dl_sub">Free and open source. Available for macOS and Windows.</p>
     <div class="download-grid">
       <div class="dl-card">
-        <div class="dl-platform">🍎</div>
+        <div class="dl-platform"><svg viewBox="0 0 24 24" style="fill:var(--text)"><use href="#icon-apple"/></svg></div>
         <h3>macOS</h3>
-        <p class="meta">Universal Binary · Apple Silicon &amp; Intel · macOS 11+</p>
+        <p class="meta" data-i18n="dl_mac_meta">Universal Binary · Apple Silicon &amp; Intel · macOS 11+</p>
         <a href="https://github.com/Caspian-dev813/BatchRename/releases/download/v1.0.0/BatchRename-macOS.zip"
-           class="btn btn-primary" onclick="triggerStar()">⬇ Download for macOS</a>
+           class="btn btn-primary" onclick="triggerStar()" data-i18n="dl_mac_btn">⬇ Download for macOS</a>
       </div>
       <div class="dl-card">
-        <div class="dl-platform">🪟</div>
+        <div class="dl-platform"><svg viewBox="0 0 24 24" style="fill:#00a4ef"><use href="#icon-windows"/></svg></div>
         <h3>Windows</h3>
-        <p class="meta">64-bit · Windows 10/11 · Built with Qt 6.8 &amp; MSVC</p>
+        <p class="meta" data-i18n="dl_win_meta">64-bit · Windows 10/11 · Built with Qt 6.8 &amp; MSVC</p>
         <a href="https://github.com/Caspian-dev813/BatchRename/releases/download/v1.0.0/BatchRename-windows.zip"
-           class="btn btn-primary" onclick="triggerStar()">⬇ Download for Windows</a>
+           class="btn btn-primary" onclick="triggerStar()" data-i18n="dl_win_btn">⬇ Download for Windows</a>
       </div>
       <div class="dl-card">
         <div class="dl-platform">📦</div>
-        <h3>Source Code</h3>
-        <p class="meta">Full source code · MIT License · Build from scratch</p>
+        <h3 data-i18n="dl_src_title">Source Code</h3>
+        <p class="meta" data-i18n="dl_src_meta">Full source code · MIT License · Build from scratch</p>
         <a href="https://github.com/Caspian-dev813/BatchRename/archive/refs/heads/Windows.zip"
-           class="btn btn-secondary" onclick="triggerStar()">⬇ Download Source (zip)</a>
+           class="btn btn-secondary" onclick="triggerStar()" data-i18n="dl_src_btn">⬇ Download Source (zip)</a>
       </div>
     </div>
     <p style="text-align:center; margin-top:32px; color:var(--text-dim); font-size:0.85rem;">
-      📂 View all releases on <a href="https://github.com/Caspian-dev813/BatchRename/releases">GitHub Releases</a>
+      <span data-i18n="dl_view_all">📂 View all releases on</span> <a href="https://github.com/Caspian-dev813/BatchRename/releases">GitHub Releases</a>
     </p>
   </div>
 </section>
 
-<!-- Repository -->
 <section>
   <div class="container" style="text-align:center;">
-    <h2 class="section-title">Open Source</h2>
-    <p class="section-sub">BatchRename is fully open source. Star the repo to show your support!</p>
+    <h2 class="section-title" data-i18n="repo_title">Open Source</h2>
+    <p class="section-sub" data-i18n="repo_sub">BatchRename is fully open source. Star the repo to show your support!</p>
     <div class="cta-group">
-      <a href="https://github.com/Caspian-dev813/BatchRename" class="btn btn-secondary" target="_blank">📂 View Repository</a>
-      <button class="btn btn-green" onclick="startStar()">★ Star This Project</button>
+      <a href="https://github.com/Caspian-dev813/BatchRename" class="btn btn-secondary" target="_blank" data-i18n="repo_btn">📂 View Repository</a>
+      <button class="btn btn-green" onclick="startStar()" data-i18n="repo_star">★ Star This Project</button>
     </div>
   </div>
 </section>
 
-<!-- License -->
 <section id="license">
   <div class="container">
-    <h2 class="section-title">License</h2>
-    <p class="section-sub">BatchRename is released under the MIT License.</p>
+    <h2 class="section-title" data-i18n="lic_title">License</h2>
+    <p class="section-sub" data-i18n="lic_sub">BatchRename is released under the MIT License.</p>
     <div class="license-box">
       <h3>MIT License</h3>
-      <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
-      <p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
-      <p style="margin-bottom:0;">THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</p>
+      <p data-i18n="lic_p1">Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+      <p data-i18n="lic_p2">The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+      <p style="margin-bottom:0;" data-i18n="lic_p3">THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</p>
     </div>
   </div>
 </section>
 
 <footer>
-  <p>© 2026 BatchRename · Built with Qt 6 · <a href="https://github.com/Caspian-dev813/BatchRename">GitHub</a></p>
+  <p>© 2026 BatchRename · <span data-i18n="footer_built">Built with Qt 6</span> · <a href="https://github.com/Caspian-dev813/BatchRename">GitHub</a></p>
 </footer>
 
-<!-- Star Modal -->
 <div class="modal-overlay" id="starModal">
   <div class="modal">
     <button class="modal-close" onclick="closeModal()">×</button>
-    <h3>⭐ Star BatchRename</h3>
-    <p>To star this project, we'll ask GitHub for permission. It only takes a few seconds.</p>
+    <h3 data-i18n="modal_title">⭐ Star BatchRename</h3>
+    <p data-i18n="modal_desc">To star this project, we'll ask GitHub for permission. It only takes a few seconds.</p>
     <div id="deviceCodeSection" style="display:none;">
-      <p>Enter this code on GitHub:</p>
+      <p data-i18n="modal_code_prompt">Enter this code on GitHub:</p>
       <div class="code-box" id="userCode">------</div>
-      <a class="btn btn-primary" id="verifyLink" target="_blank">Open github.com/login/device</a>
+      <a class="btn btn-primary" id="verifyLink" target="_blank" data-i18n="modal_verify_btn">Open github.com/login/device</a>
       <p style="margin-top:16px; font-size:0.8rem;">
         <span class="spinner" id="pollSpinner" style="display:none;"></span>
-        <span id="pollText">Waiting for authorization...</span>
+        <span id="pollText" data-i18n="modal_waiting">Waiting for authorization...</span>
       </p>
     </div>
     <div id="statusSection">
       <div class="status-msg" id="statusMsg"></div>
-      <button class="btn btn-secondary" id="fallbackBtn" style="display:none;" onclick="openRepoStar()">Open GitHub to star manually</button>
+      <button class="btn btn-secondary" id="fallbackBtn" style="display:none;" onclick="openRepoStar()" data-i18n="modal_fallback">Open GitHub to star manually</button>
     </div>
   </div>
 </div>
 
 <script>
   // ===== Configuration =====
-  // To enable auto-star, create a GitHub OAuth App at
-  // https://github.com/settings/developers and paste the Client ID below.
-  // No client secret needed (device flow).
   const GITHUB_CLIENT_ID = 'YOUR_CLIENT_ID_HERE';
   const REPO_OWNER = 'Caspian-dev813';
   const REPO_NAME = 'BatchRename';
   const REPO_URL = 'https://github.com/Caspian-dev813/BatchRename';
   // =========================
 
+  // ===== i18n =====
+  const I18N = {
+    en: {
+      nav_features: 'Features',
+      nav_download: 'Download',
+      nav_license: 'License',
+      nav_star: '★ Star',
+      hero_tagline: 'A lightweight batch file renaming tool. Rename hundreds of files with a custom prefix and sequential numbers — in one click.',
+      hero_download: '⬇ Download Free',
+      hero_star: '★ Star on GitHub',
+      badge_universal: 'Universal Binary',
+      features_title: 'Powerful, Simple',
+      features_sub: 'Everything you need to rename files in bulk — no learning curve required.',
+      f1_title: 'Custom Prefix',
+      f1_desc: 'Add any prefix to your file names. Perfect for organizing photos, documents, and archives.',
+      f2_title: 'Sequential Numbering',
+      f2_desc: '3-digit padded numbers (001, 002, 003...) with configurable starting point. Prefix before or after the number.',
+      f3_title: 'Extension Filter',
+      f3_desc: 'Filter files by extension (e.g. jpg;png;gif) so you only rename what you want.',
+      f4_title: 'Live Preview',
+      f4_desc: 'See the old and new names side by side before committing. No surprises.',
+      f5_title: 'Auto Backup &amp; Restore',
+      f5_desc: 'Files are backed up automatically before renaming. One click to restore if something goes wrong.',
+      f6_title: 'Permission Repair',
+      f6_desc: 'macOS feature: auto-fix file ownership when files belong to other users (e.g. mounted ISOs).',
+      how_title: 'How to Use',
+      how_sub: 'Four simple steps to rename your files.',
+      s1_title: 'Browse',
+      s1_desc: 'Select the folder containing the files you want to rename.',
+      s2_title: 'Configure',
+      s2_desc: 'Enter prefix, start number, and optional extension filter.',
+      s3_title: 'Preview',
+      s3_desc: 'Review the new names in the preview table.',
+      s4_title: 'Execute',
+      s4_desc: 'Click execute. Restore anytime if needed.',
+      dl_title: 'Download',
+      dl_sub: 'Free and open source. Available for macOS and Windows.',
+      dl_mac_meta: 'Universal Binary · Apple Silicon &amp; Intel · macOS 11+',
+      dl_mac_btn: '⬇ Download for macOS',
+      dl_win_meta: '64-bit · Windows 10/11 · Built with Qt 6.8 &amp; MSVC',
+      dl_win_btn: '⬇ Download for Windows',
+      dl_src_title: 'Source Code',
+      dl_src_meta: 'Full source code · MIT License · Build from scratch',
+      dl_src_btn: '⬇ Download Source (zip)',
+      dl_view_all: '📂 View all releases on',
+      repo_title: 'Open Source',
+      repo_sub: 'BatchRename is fully open source. Star the repo to show your support!',
+      repo_btn: '📂 View Repository',
+      repo_star: '★ Star This Project',
+      lic_title: 'License',
+      lic_sub: 'BatchRename is released under the MIT License.',
+      lic_p1: 'Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:',
+      lic_p2: 'The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.',
+      lic_p3: 'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.',
+      footer_built: 'Built with Qt 6',
+      modal_title: '⭐ Star BatchRename',
+      modal_desc: 'To star this project, we\'ll ask GitHub for permission. It only takes a few seconds.',
+      modal_code_prompt: 'Enter this code on GitHub:',
+      modal_verify_btn: 'Open github.com/login/device',
+      modal_waiting: 'Waiting for authorization...',
+      modal_fallback: 'Open GitHub to star manually',
+      modal_not_configured: 'Auto-star is not configured yet. Please star manually on GitHub.',
+      modal_thanks: '✅ Thanks for starring! ⭐',
+      modal_expired: 'Code expired. Please try again.',
+      modal_denied: 'Authorization denied.',
+      modal_error: 'Error: ',
+      modal_star_failed: 'Auto-star failed: ',
+      modal_authorized: 'Authorized! Starring...'
+    },
+    zh: {
+      nav_features: '功能',
+      nav_download: '下载',
+      nav_license: '许可证',
+      nav_star: '★ 收藏',
+      hero_tagline: '轻量级批量重命名工具。一键为数百个文件添加自定义前缀和顺序编号。',
+      hero_download: '⬇ 免费下载',
+      hero_star: '★ 在 GitHub 上收藏',
+      badge_universal: '通用二进制',
+      features_title: '强大而简洁',
+      features_sub: '批量重命名所需的一切 —— 无需学习成本。',
+      f1_title: '自定义前缀',
+      f1_desc: '为文件名添加任意前缀。非常适合整理照片、文档和归档文件。',
+      f2_title: '顺序编号',
+      f2_desc: '3 位补零编号（001、002、003……），可配置起始值，前缀可放在编号前或后。',
+      f3_title: '扩展名过滤',
+      f3_desc: '按扩展名过滤文件（如 jpg;png;gif），只重命名你想要的文件。',
+      f4_title: '实时预览',
+      f4_desc: '在执行前并排查看旧名和新名，没有意外。',
+      f5_title: '自动备份与恢复',
+      f5_desc: '重命名前自动备份文件。出了问题一键恢复。',
+      f6_title: '权限修复',
+      f6_desc: 'macOS 功能：当文件属于其他用户时（如挂载的 ISO），自动修复文件所有权。',
+      how_title: '使用方法',
+      how_sub: '简单四步，重命名你的文件。',
+      s1_title: '浏览',
+      s1_desc: '选择包含要重命名文件的文件夹。',
+      s2_title: '配置',
+      s2_desc: '输入前缀、起始编号和可选的扩展名过滤。',
+      s3_title: '预览',
+      s3_desc: '在预览表中查看新文件名。',
+      s4_title: '执行',
+      s4_desc: '点击执行。随时可以恢复。',
+      dl_title: '下载',
+      dl_sub: '免费开源。支持 macOS 和 Windows。',
+      dl_mac_meta: '通用二进制 · Apple Silicon 与 Intel · macOS 11+',
+      dl_mac_btn: '⬇ 下载 macOS 版',
+      dl_win_meta: '64 位 · Windows 10/11 · 使用 Qt 6.8 与 MSVC 构建',
+      dl_win_btn: '⬇ 下载 Windows 版',
+      dl_src_title: '源代码',
+      dl_src_meta: '完整源代码 · MIT 许可证 · 从零构建',
+      dl_src_btn: '⬇ 下载源码 (zip)',
+      dl_view_all: '📂 查看所有版本：',
+      repo_title: '开源',
+      repo_sub: 'BatchRename 完全开源。点个 Star 支持一下吧！',
+      repo_btn: '📂 查看仓库',
+      repo_star: '★ 收藏本项目',
+      lic_title: '许可证',
+      lic_sub: 'BatchRename 基于 MIT 许可证发布。',
+      lic_p1: '特此免费授予获得本软件及相关文档文件（"软件"）副本的任何人不受限制地处理软件的许可，包括但不限于使用、复制、修改、合并、发布、分发、再许可和/或销售软件副本的权利，并允许向其提供软件的人这样做，符合以下条件：',
+      lic_p2: '上述版权声明和本许可声明应包含在软件的所有副本或重要部分中。',
+      lic_p3: '本软件按"原样"提供，不作任何形式的保证。',
+      footer_built: '使用 Qt 6 构建',
+      modal_title: '⭐ 收藏 BatchRename',
+      modal_desc: '要收藏本项目，我们需要向 GitHub 请求授权，只需几秒钟。',
+      modal_code_prompt: '在 GitHub 上输入以下代码：',
+      modal_verify_btn: '打开 github.com/login/device',
+      modal_waiting: '等待授权中……',
+      modal_fallback: '打开 GitHub 手动收藏',
+      modal_not_configured: '自动收藏尚未配置，请手动在 GitHub 上收藏。',
+      modal_thanks: '✅ 感谢收藏！⭐',
+      modal_expired: '代码已过期，请重试。',
+      modal_denied: '授权被拒绝。',
+      modal_error: '错误：',
+      modal_star_failed: '自动收藏失败：',
+      modal_authorized: '已授权！正在收藏……'
+    }
+  };
+
+  let currentLang = localStorage.getItem('batchrename-lang') || 'en';
+
+  function setLang(lang) {
+    currentLang = lang;
+    localStorage.setItem('batchrename-lang', lang);
+    document.documentElement.lang = lang;
+    document.querySelectorAll('.lang-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.lang === lang);
+    });
+    const dict = I18N[lang] || I18N.en;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.dataset.i18n;
+      if (dict[key] !== undefined) {
+        el.innerHTML = dict[key];
+      }
+    });
+  }
+
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => setLang(btn.dataset.lang));
+  });
+
+  setLang(currentLang);
+
+  // ===== Star logic =====
   let pollHandle = null;
+  const dict = () => I18N[currentLang] || I18N.en;
 
   function openModal() {
     document.getElementById('starModal').classList.add('active');
@@ -503,12 +683,10 @@
     document.getElementById('statusMsg').textContent = '';
     document.getElementById('fallbackBtn').style.display = 'none';
   }
-
   function openRepoStar() {
     window.open(REPO_URL, '_blank');
     closeModal();
   }
-
   function showStatus(msg, type) {
     const el = document.getElementById('statusMsg');
     el.textContent = msg;
@@ -517,15 +695,15 @@
 
   async function startStar() {
     openModal();
+    const t = dict();
 
     if (GITHUB_CLIENT_ID === 'YOUR_CLIENT_ID_HERE') {
-      showStatus('Auto-star is not configured yet. Please star manually on GitHub.', 'error');
+      showStatus(t.modal_not_configured, 'error');
       document.getElementById('fallbackBtn').style.display = 'inline-block';
       return;
     }
 
     try {
-      // Step 1: Request device code
       const res = await fetch('https://github.com/login/device/code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
@@ -540,7 +718,6 @@
       document.getElementById('verifyLink').href = data.verification_uri;
       document.getElementById('deviceCodeSection').style.display = 'block';
 
-      // Step 2: Poll for access token
       const interval = (data.interval || 5) * 1000;
       pollHandle = setInterval(async () => {
         try {
@@ -559,9 +736,8 @@
             clearInterval(pollHandle);
             pollHandle = null;
             document.getElementById('pollSpinner').style.display = 'none';
-            document.getElementById('pollText').textContent = 'Authorized! Starring...';
+            document.getElementById('pollText').textContent = t.modal_authorized;
 
-            // Step 3: Star the repo
             const starRes = await fetch(`https://api.github.com/user/starred/${REPO_OWNER}/${REPO_NAME}`, {
               method: 'PUT',
               headers: {
@@ -570,7 +746,7 @@
               }
             });
             if (starRes.status === 204) {
-              showStatus('✅ Thanks for starring! ⭐', 'success');
+              showStatus(t.modal_thanks, 'success');
             } else {
               throw new Error('Star failed (HTTP ' + starRes.status + ')');
             }
@@ -581,27 +757,26 @@
           } else if (tokData.error === 'expired_token') {
             clearInterval(pollHandle);
             pollHandle = null;
-            showStatus('Code expired. Please try again.', 'error');
+            showStatus(t.modal_expired, 'error');
           } else if (tokData.error === 'access_denied') {
             clearInterval(pollHandle);
             pollHandle = null;
-            showStatus('Authorization denied.', 'error');
+            showStatus(t.modal_denied, 'error');
           }
         } catch (e) {
           clearInterval(pollHandle);
           pollHandle = null;
-          showStatus('Error: ' + e.message, 'error');
+          showStatus(t.modal_error + e.message, 'error');
           document.getElementById('fallbackBtn').style.display = 'inline-block';
         }
       }, interval);
 
     } catch (e) {
-      showStatus('Auto-star failed: ' + e.message + '. You can star manually instead.', 'error');
+      showStatus(t.modal_star_failed + e.message + '. You can star manually instead.', 'error');
       document.getElementById('fallbackBtn').style.display = 'inline-block';
     }
   }
 
-  // Trigger star when downloading (only prompts once)
   let starPrompted = false;
   function triggerStar() {
     if (!starPrompted) {
