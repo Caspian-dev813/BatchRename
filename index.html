@@ -1,49 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>
-  // ===== Region-based auto redirect =====
-  // China -> GitCode Pages, Global -> GitHub Pages
-  (function() {
-    var GITHUB_HOST = 'caspian-dev813.github.io';
-    var GITCODE_HOST = 'mikehuang8358.gitcode.io';
-    var host = window.location.hostname;
-    var isGithub = host.indexOf('github.io') !== -1;
-    var isGitcode = host.indexOf('gitcode') !== -1;
-    if (!isGithub && !isGitcode) return; // local or other, skip
-
-    if (sessionStorage.getItem('redirected')) return; // prevent loop
-
-    var isZh = (navigator.language || '').toLowerCase().startsWith('zh');
-    function doRedirect() {
-      sessionStorage.setItem('redirected', '1');
-      if (isZh) {
-        window.location.replace('https://' + GITCODE_HOST + '/BatchRename/' + window.location.pathname.replace(/^\/BatchRename\//, '') + window.location.search + window.location.hash);
-      } else {
-        window.location.replace('https://' + GITHUB_HOST + '/BatchRename/' + window.location.search + window.location.hash);
-      }
-    }
-
-    // Fast path: language detection
-    if (isGithub && isZh) { doRedirect(); return; }
-    if (isGitcode && !isZh) { doRedirect(); return; }
-
-    // Accurate: IP geolocation (2s timeout, fallback to language)
-    var done = false;
-    var timer = setTimeout(function() {
-      if (!done) { done = true; if (isGithub && isZh) doRedirect(); else if (isGitcode && !isZh) doRedirect(); }
-    }, 2000);
-    try {
-      fetch('https://ipapi.co/json/').then(function(r) { return r.json(); }).then(function(d) {
-        if (done) return;
-        done = true; clearTimeout(timer);
-        var cn = (d.country_code === 'CN' || d.country_name === 'China');
-        if (isGithub && cn) doRedirect();
-        else if (isGitcode && !cn) doRedirect();
-      }).catch(function() {});
-    } catch(e) {}
-  })();
-</script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>BatchRename — Batch File Renaming Tool</title>
