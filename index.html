@@ -6,7 +6,7 @@
   // China -> GitCode Pages, Global -> GitHub Pages
   (function() {
     var GITHUB_HOST = 'caspian-dev813.github.io';
-    var GITCODE_HOST = 'mikehuang8358.pages.gitcode.com';
+    var GITCODE_HOST = 'mikehuang8358.gitcode.io';
     var host = window.location.hostname;
     var isGithub = host.indexOf('github.io') !== -1;
     var isGitcode = host.indexOf('gitcode') !== -1;
@@ -900,7 +900,7 @@
       });
       const data = await res.json();
       if (!data.device_code) {
-        throw new Error(data.error || 'Failed to get device code');
+        ?throw new Error(data.error || 'Failed to get device code');
       }
 
       document.getElementById('userCode').textContent = data.user_code;
