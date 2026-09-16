@@ -803,7 +803,7 @@
       });
       const data = await res.json();
       if (!data.device_code) {
-        ?throw new Error(data.error || 'Failed to get device code');
+        throw new Error(data.error || 'Failed to get device code');
       }
 
       document.getElementById('userCode').textContent = data.user_code;
