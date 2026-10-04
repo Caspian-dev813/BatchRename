@@ -1,0 +1,50 @@
+name: Build macOS Release
+
+on:
+  push:
+    branches: [ macOS ]
+  workflow_dispatch:
+
+env:
+  QT_VERSION: '6.8.0'
+
+jobs:
+  build:
+    runs-on: macos-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ env.QT_VERSION }}
+          host: mac
+          target: desktop
+          install-deps: 'true'
+
+      - name: Configure
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$Qt6_DIR"
+
+      - name: Build
+        run: cmake --build build --config Release -j
+
+      - name: Deploy with macdeployqt
+        run: |
+          macdeployqt build/BatchRename.app -dmg
+          ls -lh build/*.dmg
+
+      - name: Rename dmg
+        run: mv build/BatchRename.dmg BatchRename-macOS.dmg
+
+      - name: Upload to Release v1.0.1
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.1
+          files: BatchRename-macOS.dmg
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
