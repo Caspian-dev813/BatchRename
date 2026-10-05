@@ -38,13 +38,13 @@ jobs:
           ls -lh build/*.dmg
 
       - name: Rename dmg
-        run: mv build/BatchRename.dmg BatchRename-macOS.dmg
+        run: mv build/BatchRename.dmg BatchRename.v1.0.1.aarch64.dmg
 
       - name: Upload to Release v1.0.1
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v1.0.1
-          files: BatchRename-macOS.dmg
+          files: BatchRename.v1.0.1.aarch64.dmg
           fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
