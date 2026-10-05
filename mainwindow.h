@@ -22,7 +22,10 @@ private slots:
     void on_btn_browse_clicked();
     void on_btn_execute_clicked();
     void on_btn_restore_clicked();
-    void refreshFileCountLabel();
+    void refreshPreview();
+
+private:
+    void setupTableHeaders();
 
 private:
     void syncGeneratorSettings();

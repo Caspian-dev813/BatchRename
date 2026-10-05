@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include <QDir>
 #include <QMessageBox>
+#include <QTableWidgetItem>
 
 MainWindow::MainWindow(QWidget* parent)
     : QWidget(parent)
@@ -12,11 +13,29 @@ MainWindow::MainWindow(QWidget* parent)
 {
     ui->setupUi(this);
     setFixedSize(690, 700);
+    setupTableHeaders();
     connect(ui->edit_folder, &QLineEdit::textChanged,
-            this, &MainWindow::refreshFileCountLabel);
+            this, &MainWindow::refreshPreview);
     connect(ui->edit_suffix, &QLineEdit::textChanged,
-            this, &MainWindow::refreshFileCountLabel);
-    refreshFileCountLabel();
+            this, &MainWindow::refreshPreview);
+    connect(ui->edit_prefix, &QLineEdit::textChanged,
+            this, &MainWindow::refreshPreview);
+    connect(ui->lineEdit, &QLineEdit::textChanged,
+            this, &MainWindow::refreshPreview);
+    connect(ui->Perfix_mode, &QRadioButton::toggled,
+            this, &MainWindow::refreshPreview);
+    connect(ui->Suffix_name_mode, &QRadioButton::toggled,
+            this, &MainWindow::refreshPreview);
+    refreshPreview();
+}
+
+void MainWindow::setupTableHeaders()
+{
+    ui->tableWidget->setColumnCount(3);
+    ui->tableWidget->setHorizontalHeaderLabels({"No.", "Original Name", "New Name"});
+    ui->tableWidget->horizontalHeader()->setStretchLastSection(true);
+    ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
 }
 
 MainWindow::~MainWindow()
@@ -38,20 +57,45 @@ void MainWindow::on_btn_browse_clicked()
         ui->edit_folder->setText(selectedPath);
 }
 
-void MainWindow::refreshFileCountLabel()
+void MainWindow::refreshPreview()
 {
+    ui->tableWidget->setRowCount(0);
+
     QString folder = ui->edit_folder->text().trimmed();
     QString suffixText = ui->edit_suffix->text().trimmed();
 
     ScanResult check = FileScanner::verifyFolder(folder);
     if (!check.isValid())
     {
-        ui->label_status->setText("Status: 0 fils found");
+        ui->label_status->setText("Status: 0 files found");
+        ui->labelFileCount->setText("Scanned 0 files");
         return;
     }
 
     QFileInfoList fileList = FileScanner::collectFilteredFiles(folder, suffixText);
-    ui->label_status->setText(QString("Status: %1 fils found").arg(fileList.size()));
+    ui->label_status->setText(QString("Status: %1 files found").arg(fileList.size()));
+
+    bool numberOk = false;
+    int startNumber = ui->lineEdit->text().toInt(&numberOk);
+    if (!numberOk || startNumber < 1)
+        startNumber = 1;
+
+    syncGeneratorSettings();
+
+    int previewMax = 10;
+    int showCount = qMin(fileList.size(), previewMax);
+    ui->labelFileCount->setText(QString("Scanned %1 files (preview first %2)")
+                                    .arg(fileList.size()).arg(showCount));
+
+    ui->tableWidget->setRowCount(showCount);
+    for (int i = 0; i < showCount; i++)
+    {
+        const QFileInfo& info = fileList.at(i);
+        ui->tableWidget->setItem(i, 0, new QTableWidgetItem(QString::number(i + 1)));
+        ui->tableWidget->setItem(i, 1, new QTableWidgetItem(info.fileName()));
+        QString newName = m_nameGenerator.generate(info, startNumber + i);
+        ui->tableWidget->setItem(i, 2, new QTableWidgetItem(newName));
+    }
 }
 
 

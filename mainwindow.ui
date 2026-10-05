@@ -42,162 +42,291 @@
     <number>12</number>
    </property>
    <item>
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt; font-weight:600; font-style:italic;&quot;&gt;BatchRename 1.0.1&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
      </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="label_folder">
-     <property name="text">
-      <string>Target folder:</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="h_folder">
-     <item>
-      <widget class="QLineEdit" name="edit_folder"/>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btn_browse">
-       <property name="text">
-        <string>Browse...</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <widget class="QLabel" name="label_suffix">
-     <property name="text">
-      <string>File Suffix Filter:</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLineEdit" name="edit_suffix">
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;所有后缀均为分号(;)分割，示例：.jpg;.png;.exe;.reg&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="placeholderText">
-      <string>Multiple suffixes separated by semicolon(;), and no dot example: jpg;exe</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QWidget" name="widget" native="true">
-     <widget class="QLabel" name="label_prefix">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>449</width>
-        <height>28</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Output Perfix:</string>
-      </property>
+     <widget class="QWidget" name="page">
+      <attribute name="title">
+       <string>操作设置</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_page1">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt; font-weight:600; font-style:italic;&quot;&gt;BatchRename 2.0.0&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_folder">
+         <property name="text">
+          <string>Target folder:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="h_folder">
+         <item>
+          <widget class="QLineEdit" name="edit_folder"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btn_browse">
+           <property name="text">
+            <string>Browse...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_suffix">
+         <property name="text">
+          <string>File Suffix Filter:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="edit_suffix">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;所有后缀均为分号(;)分割，示例：.jpg;.png;.exe;.reg&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="placeholderText">
+          <string>Multiple suffixes separated by semicolon(;), and no dot example: jpg;exe</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="widget" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>55</height>
+          </size>
+         </property>
+         <widget class="QLabel" name="label_prefix">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>10</y>
+            <width>120</width>
+            <height>28</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Output Perfix:</string>
+          </property>
+         </widget>
+         <widget class="QRadioButton" name="Perfix_mode">
+          <property name="geometry">
+           <rect>
+            <x>550</x>
+            <y>8</y>
+            <width>90</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Perfix</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QRadioButton" name="Suffix_name_mode">
+          <property name="geometry">
+           <rect>
+            <x>550</x>
+            <y>30</y>
+            <width>90</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Suffix</string>
+          </property>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="edit_prefix">
+         <property name="placeholderText">
+          <string>Prefix only, no file extension</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_seq">
+         <property name="text">
+          <string>Start Number:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_status">
+         <property name="text">
+          <string>Status: 0 fils found</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="h_btns">
+         <item>
+          <widget class="QPushButton" name="btn_restore">
+           <property name="text">
+            <string>Restore</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btn_execute">
+           <property name="text">
+            <string>Execute Rename</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
      </widget>
-     <widget class="QRadioButton" name="Perfix_mode">
-      <property name="geometry">
-       <rect>
-        <x>570</x>
-        <y>10</y>
-        <width>91</width>
-        <height>18</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Perfix</string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
+     <widget class="QWidget" name="page_2">
+      <attribute name="title">
+       <string>预览列表</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_page2">
+       <item>
+        <widget class="QTableWidget" name="tableWidget">
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+         <property name="columnCount">
+          <number>5</number>
+         </property>
+         <column>
+          <property name="text">
+           <string>序号</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>原文件名</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>新文件名</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>大小</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>SHA256</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelFileCount">
+         <property name="text">
+          <string>已浏览 0 个文件</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
-     <widget class="QRadioButton" name="Suffix_name_mode">
-      <property name="geometry">
-       <rect>
-        <x>570</x>
-        <y>30</y>
-        <width>91</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Suffix</string>
-      </property>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>关于</string>
+      </attribute>
+      <layout class="QHBoxLayout" name="aboutLayout">
+       <property name="spacing">
+        <number>20</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="aboutIcon">
+         <property name="minimumSize">
+          <size>
+           <width>128</width>
+           <height>256</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>128</width>
+           <height>256</height>
+          </size>
+         </property>
+         <property name="pixmap">
+          <pixmap resource="res.qrc">:/icons/icons/tall_icon.png</pixmap>
+         </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="aboutTextLayout">
+         <item>
+          <widget class="QLabel" name="aboutTitle">
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:16pt; font-weight:600;&quot;&gt;BatchRename&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="aboutVersion">
+           <property name="text">
+            <string>Version 2.0.0</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Caspian-dev813 (c) 2026</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>https://caspian-dev813.github.io/BatchRename</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="aboutSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
      </widget>
     </widget>
-   </item>
-   <item>
-    <widget class="QLineEdit" name="edit_prefix">
-     <property name="sizeIncrement">
-      <size>
-       <width>407</width>
-       <height>514</height>
-      </size>
-     </property>
-     <property name="baseSize">
-      <size>
-       <width>407</width>
-       <height>514</height>
-      </size>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="placeholderText">
-      <string>Prefix only, no file extension</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="label_seq">
-     <property name="text">
-      <string>Start Number:</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLineEdit" name="lineEdit">
-     <property name="placeholderText">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="label_status">
-     <property name="text">
-      <string>Status: 0 fils found</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="h_btns">
-     <item>
-      <widget class="QPushButton" name="btn_restore">
-       <property name="text">
-        <string>Restore</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btn_execute">
-       <property name="text">
-        <string>Execute Rename</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="res.qrc"/>
+ </resources>
  <connections/>
 </ui>
